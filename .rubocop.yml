@@ -1,0 +1,4 @@
+AllCops:  
+  Exclude:
+  - 'google-10000-english-no-swears.txt'
+  - 'Gemfile.lock'
