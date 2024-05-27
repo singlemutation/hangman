@@ -39,7 +39,7 @@ class PlayGame
       puts "Wrong guesses #{@bad_letters}"
       break if game_won
 
-      puts 'You lose!' if @count.zero?
+      puts "You lose! The word was #{@secret_word.word}!" if @count.zero?
     end
   end
 
