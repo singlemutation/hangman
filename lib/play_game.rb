@@ -10,7 +10,8 @@ class PlayGame
   def initialize(game)
     @count = game.count
     @bad_letters = game.bad_letters
-    @secret_word = game.secret_word
+    @word = game.word
+    @masked_word = game.masked_word
     play_round
   end
 
@@ -21,14 +22,14 @@ class PlayGame
   end
 
   def unmask
-    @secret_word.word.split('').map.with_index do |v, i|
-      @secret_word.masked_word[i] = @guess if v == @guess
+    @word.split('').map.with_index do |v, i|
+      @masked_word[i] = @guess if v == @guess
     end
   end
 
   def counter
     return if @guess == 'save'
-    return if @secret_word.word.include? @guess
+    return if @word.include? @guess
 
     @count -= 1
     @bad_letters.push(@guess)
@@ -37,7 +38,7 @@ class PlayGame
   def play_round
     until @count.zero?
       puts "#{@count} limbs remain"
-      p @secret_word.masked_word
+      p @masked_word
       player_guess
       break if @guess == 'save'
 
@@ -46,22 +47,22 @@ class PlayGame
       puts "Wrong guesses #{@bad_letters}"
       break if game_won
 
-      puts "You lose! The word was #{@secret_word.word}!" if @count.zero?
+      puts "You lose! The word was #{@word}!" if @count.zero?
     end
   end
 
   def game_won
-    return unless @secret_word.word == @secret_word.masked_word.join
+    return unless @word == @masked_word.join
 
-    p @secret_word.masked_word
-    puts "You guessed the word #{@secret_word.word}!"
+    p @masked_word
+    puts "You guessed the word #{@word}!"
     true
   end
 
   def save_game
     hash = JSON.dump({
-                       word: @secret_word.word,
-                       masked_word: @secret_word.masked_word,
+                       word: @word,
+                       masked_word: @masked_word,
                        count: @count,
                        bad_letters: @bad_letters
                      })
