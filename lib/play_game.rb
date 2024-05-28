@@ -7,10 +7,10 @@ require_relative 'basic_serializable'
 # Play game
 class PlayGame
   include BasicSerializable
-  def initialize
-    @count = 6
-    @bad_letters = []
-    @secret_word = WordPicker.new
+  def initialize(game)
+    @count = game.count
+    @bad_letters = game.bad_letters
+    @secret_word = game.secret_word
     play_round
   end
 
@@ -62,12 +62,18 @@ class PlayGame
     hash = JSON.dump({
                        word: @secret_word.word,
                        masked_word: @secret_word.masked_word,
-                       count: @count
+                       count: @count,
+                       bad_letters: @bad_letters
                      })
     File.open('lib/save_games.json', 'w') do |file|
       file.write(hash)
     end
     puts 'Game saved'
+  end
+
+  def load_game
+    File.open('save_games.json', 'r') do |file|
+    end
   end
 end
 
