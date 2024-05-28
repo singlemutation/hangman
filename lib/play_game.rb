@@ -1,9 +1,12 @@
 # frozen_string_literal:true
 
+require 'json'
 require_relative 'word_picker'
+require_relative 'basic_serializable'
 
 # Play game
 class PlayGame
+  include BasicSerializable
   def initialize
     @count = 6
     @bad_letters = []
@@ -14,6 +17,7 @@ class PlayGame
   def player_guess
     puts 'Your guess?'
     @guess = gets.chomp
+    save_game if @guess == 'save'
   end
 
   def unmask
@@ -23,6 +27,7 @@ class PlayGame
   end
 
   def counter
+    return if @guess == 'save'
     return if @secret_word.word.include? @guess
 
     @count -= 1
@@ -34,6 +39,8 @@ class PlayGame
       puts "#{@count} limbs remain"
       p @secret_word.masked_word
       player_guess
+      break if @guess == 'save'
+
       unmask
       counter
       puts "Wrong guesses #{@bad_letters}"
@@ -50,11 +57,26 @@ class PlayGame
     puts "You guessed the word #{@secret_word.word}!"
     true
   end
+
+  def save_game
+    hash = JSON.dump({
+                       word: @secret_word.word,
+                       masked_word: @secret_word.masked_word,
+                       count: @count
+                     })
+    File.open('lib/save_games.json', 'w') do |file|
+      file.write(hash)
+    end
+    puts 'Game saved'
+  end
 end
 
-# Counter == 6 body parts
-# Get player guess
-# If player @guess is in @word, replace _ in @masked_word with @guess
-# If player guess is wrong, remove 1 from counter
-# If counter gets to 0, player loses
-# If @masked word == @word, player wins
+# save_game method
+# store @secret_word.word and @secretword.masked_word
+# store @count
+# store @bad_letters
+#
+# load_game method
+# load the stored values back into the game
+
+# PlayGame.new
